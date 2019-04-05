@@ -41,7 +41,7 @@ class Room:
         for thermostat in thermostats:
             thermostat.change_state(temperature=temperature)
     
-    def set_schedule(self, device, start_time, end_time):
+    def set_schedule(self, device, time):
         pass
     
     def add_device(self, device):
