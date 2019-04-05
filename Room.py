@@ -46,4 +46,4 @@ class Room:
         self.__devices.append(device)
     
     def get_power_usage(self):
-        return sum(dev.get_power_usage() for dev in self.__devices)
+        return sum(dev.wattage for dev in self.__devices)
