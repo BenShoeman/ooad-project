@@ -19,25 +19,27 @@ class Room:
     def lights_on(self):
         lights = self.get_devices_of_type(Lightbulb)
         for light in lights:
-            pass # Set light device state to on
+            light.change_state(on=True)
     
     def lights_off(self):
         lights = self.get_devices_of_type(Lightbulb)
         for light in lights:
-            pass # Set light device state to off
+            light.change_state(on=False)
     
-    def play_music(self):
+    def play_music(self, song):
         speakers = self.get_devices_of_type(Speaker)
         for speaker in speakers:
-            pass # Set speaker device state to on with a specific song
+            speaker.change_state(on=True, song=song)
     
     def stop_music(self):
         speakers = self.get_devices_of_type(Speaker)
         for speaker in speakers:
-            pass # Set speaker device state to off
+            speaker.change_state(on=False)
     
     def set_temperature(self, temperature):
-        pass
+        thermostats = self.get_devices_of_type(Thermostat)
+        for thermostat in thermostats:
+            thermostat.change_state(temperature=temperature)
     
     def set_schedule(self, device, start_time, end_time):
         pass
