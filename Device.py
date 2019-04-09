@@ -6,7 +6,7 @@ class Device:
 
         try:
             self.__allowed_states # Check if value exists. If not, make an empty list
-        except NameError:
+        except AttributeError:
             # This is a list of allowed state options, which is set in each specific
             # subclass's constructor, along with default values
             self.__allowed_states = []

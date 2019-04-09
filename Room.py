@@ -44,8 +44,31 @@ class Room:
     def set_schedule(self, device, time):
         pass
     
-    def add_device(self, device):
-        self.__devices.append(device)
+    def add_device(self, deviceType):
+    		if deviceType == "light":
+    			device = Device(self.__name + "light", 60)
+    			self.__devices.append(device)
+    		elif deviceType == "speaker":
+    			device = Device(self.__name + "speaker", 30)
+    			self.__devices.append(device)
+    		elif deviceType == "thermostat":
+    			device = Device(self.__name + "thermostat", 10)
+    			self.__devices.append(device)
+    		elif deviceType == "plug":
+    			device = Device(self.__name + "plug", 120)
+    			self.__devices.append(device)
+    		elif deviceType == "fan":
+    			device = Device(self.__name + "fan", 100)
+    			self.__devices.append(device)
+    		elif deviceType == "lock":
+    			device = Device(self.__name + "lock", 5)
+    			self.__devices.append(device)
+    		elif deviceType == "security camera":
+    			device = Device(self.__name + "security camera", 60)
+    			self.__devices.append(device)
+    		else:
+    			print("Invalid device type")
+     	
     
     def get_power_usage(self):
         return sum(dev.wattage for dev in self.__devices)
