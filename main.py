@@ -57,7 +57,37 @@ def main():
 
 	#Start up one UI if we are a real user, or another if we are simulating
 	if type(user) != RealUser:
+
 		print("simulating")
+
+		#This needs to be more of an app-like menu
+
+		#Display current state of all devices, and if there on a routine
+
+		#Display all registered Users
+
+		#The user will then have the options: 
+
+		# 1: Add device
+
+
+		# 2: Add User
+
+
+		# 3: Edit device settings
+		#This is where a user can create automated routines for devices
+
+		
+		# 4: View Energy Report
+
+		
+		#4: Standby (Ability to "watch" the house)
+		#Here devices will print when they are being turned on/off and various info
+		#    about their current state, the house will print out energy info and time
+		#    periodically. This is so a user could see what is happening in the house
+		#    and it will prove that our app is actually doing something.
+
+
 	else:
 		print("controlling")
 
@@ -126,13 +156,14 @@ def main():
 
 						elif cmd == "l":
 							print ("left")
+							#We could have the house do something when the user leaves
 
 						elif cmd == "e":
 							print ("entered")
+							#We could hae the house do something when the user returns
 
 						elif cmd == "settings":
-							#This is where user could create automated tasks
-							print("Setting things...")
+							#This is where user could create automated tasks for a device in their room							print("Setting things...")
 
 						elif cmd == "wait1":
 							print ("\n Waiting one hour... \n")
