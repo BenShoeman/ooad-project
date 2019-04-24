@@ -1,4 +1,6 @@
 from Device import *
+from Task import *
+from TaskRunner import *
 
 class Room:
     def __init__(self, name):
@@ -41,8 +43,9 @@ class Room:
         for thermostat in thermostats:
             thermostat.change_state(temperature=temperature)
     
-    def set_schedule(self, device, time):
-        pass
+    def set_schedule(self, device, state, time):
+        task = Task(device.name + " task", time, device, state)
+        TaskRunner.get_task_runner().add_task(task)
     
     def add_device(self, deviceType):
     		if deviceType == "light":

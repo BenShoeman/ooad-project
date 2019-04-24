@@ -1,4 +1,4 @@
-import time
+import Time
 
 class Task:
     def __init__(self, name, time, device, actions=None):
@@ -12,14 +12,17 @@ class Task:
                     self.__actions[key] = actions[key]
 
         self.__actions = actions if actions is not None else {}
+
+        # This is for comparing the tasks to the Time object
+        self.__last_day_run = 0
     
     @property
     def name(self):
-        return name
+        return self.__name
     
     @property
     def time(self):
-        return time
+        return self.__time
     
     def set_time(self, time):
         self.__time = time
@@ -31,5 +34,6 @@ class Task:
     
     def do_actions(self):
         # Make sure it's the right time to do the actions
-        if time.strftime("%H:%M", time.localtime()) == self.time:
+        if Time.get_time().has_time_passed(self.__last_day_run, self.time):
             self.__device.change_state(**self.__actions)
+            self.__last_day_run = Time.get_time().day

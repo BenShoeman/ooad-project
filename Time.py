@@ -7,7 +7,7 @@ class Time:
             self.minute = 0
 
         def add_day(self):
-            self.day = self.day % 31 + 1
+            self.day += 1
         
         def add_hour(self):
             self.hour = (self.hour + 1) % 24
