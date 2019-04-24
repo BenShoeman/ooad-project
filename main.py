@@ -4,6 +4,11 @@ from Room import *
 from Task import *
 from TaskRunner import *
 from User import *
+import os
+
+# Command to clear terminal
+def clear():
+    os.system('cls' if os.name=='nt' else 'clear')
 
 def getInput(validCommands):
 	valid = False
