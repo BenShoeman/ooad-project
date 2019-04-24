@@ -46,29 +46,33 @@ class Room:
     
     def add_device(self, deviceType):
     		if deviceType == "light":
-    			device = Device(self.__name + "light", 60)
+    			device = Lightbulb(self.__name + " light", 60)
     			self.__devices.append(device)
     		elif deviceType == "speaker":
-    			device = Device(self.__name + "speaker", 30)
+    			device = Speaker(self.__name + " speaker", 30)
     			self.__devices.append(device)
     		elif deviceType == "thermostat":
-    			device = Device(self.__name + "thermostat", 10)
+    			device = Thermostat(self.__name + " thermostat", 10)
     			self.__devices.append(device)
     		elif deviceType == "plug":
-    			device = Device(self.__name + "plug", 120)
+    			device = Plug(self.__name + " plug", 120)
     			self.__devices.append(device)
     		elif deviceType == "fan":
-    			device = Device(self.__name + "fan", 100)
+    			device = Fan(self.__name + " fan", 100)
     			self.__devices.append(device)
     		elif deviceType == "lock":
-    			device = Device(self.__name + "lock", 5)
+    			device = Lock(self.__name + " lock", 5)
     			self.__devices.append(device)
     		elif deviceType == "security camera":
-    			device = Device(self.__name + "security camera", 60)
+    			device = SecurityCamera(self.__name + " security camera", 60)
     			self.__devices.append(device)
     		else:
     			print("Invalid device type")
      	
-    
     def get_power_usage(self):
         return sum(dev.wattage for dev in self.__devices)
+    
+    def print_room_info(self):
+        print(self.name)
+        for device in self.devices:
+            print("\t" + str(device))

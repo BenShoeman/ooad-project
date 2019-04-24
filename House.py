@@ -25,7 +25,10 @@ class House:
 					return r
 			
 			print("Room not found \n")
-		
     
 	def get_overall_power_usage(self):
 		return sum(room.get_power_usage() for room in self.__rooms)
+	
+	def print_house_info(self):
+		for room in self.rooms:
+			room.print_room_info()

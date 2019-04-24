@@ -163,7 +163,8 @@ def main():
 							#We could hae the house do something when the user returns
 
 						elif cmd == "settings":
-							#This is where user could create automated tasks for a device in their room							print("Setting things...")
+							#This is where user could create automated tasks for a device in their room
+							print("Setting things...")
 
 						elif cmd == "wait1":
 							print ("\n Waiting one hour... \n")
