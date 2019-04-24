@@ -7,19 +7,33 @@ class User:
         return self.__name
 
 class InfrequentUser(User):
-    pass
+  def __init__(self, name):
+    super().__init__(name)
+    self.numberInteractions = 3
+    self.numAutomationTasks = 0
 
 class RegularUser(User):
-    pass
+  def __init__(self, name):
+    super().__init__(name)
+    self.numberInteractions = 20
+    self.numAutomationTasks = 2
 
 class AutomationUser(User):
-    pass
+  def __init__(self, name):
+    super().__init__(name)
+    self.numberInteractions = 0
+    self.numAutomationTasks = 10
 
 class PowerUser(User):
-    pass
+  def __init__(self, name):
+    super().__init__(name)
+    self.numberInteractions = 20
+    self.numAutomationTasks = 5
 
 class RealUser(User):
-    pass
+  def __init__(self, name):
+    super().__init__(name)
 
 class Observer(User):
     pass
+    #Do we need this?
