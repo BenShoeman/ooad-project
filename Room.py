@@ -47,6 +47,9 @@ class Room:
         task = Task(device.name + " task", time, device, state)
         TaskRunner.get_task_runner().add_task(task)
     
+    def remove_schedule(self, device):
+        TaskRunner.get_task_runner().remove_tasks_for_device(device)
+    
     def add_device(self, deviceType):
     		if deviceType == "light":
     			device = Lightbulb(self.__name + " light", 60)

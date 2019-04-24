@@ -24,6 +24,10 @@ class Task:
     def time(self):
         return self.__time
     
+    @property
+    def device(self):
+        return self.__device
+    
     def set_time(self, time):
         self.__time = time
     
@@ -37,3 +41,6 @@ class Task:
         if Time.get_time().has_time_passed(self.__last_day_run, self.time):
             self.__device.change_state(**self.__actions)
             self.__last_day_run = Time.get_time().day
+    
+    def __str__(self):
+        return "Task \"{}\" for {} at {}: {}".format(self.name, self.__device.name, self.time, self.__actions)
