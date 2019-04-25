@@ -12,6 +12,7 @@ class Room:
         return self.__name
     
     @property
+
     def devices(self):
         return tuple(self.__devices)
     
@@ -51,29 +52,31 @@ class Room:
         TaskRunner.get_task_runner().remove_tasks_for_device(device)
     
     def add_device(self, deviceType):
-    		if deviceType == "light":
-    			device = Lightbulb(self.__name + " light", 60)
-    			self.__devices.append(device)
-    		elif deviceType == "speaker":
-    			device = Speaker(self.__name + " speaker", 30)
-    			self.__devices.append(device)
-    		elif deviceType == "thermostat":
-    			device = Thermostat(self.__name + " thermostat", 10)
-    			self.__devices.append(device)
-    		elif deviceType == "plug":
-    			device = Plug(self.__name + " plug", 120)
-    			self.__devices.append(device)
-    		elif deviceType == "fan":
-    			device = Fan(self.__name + " fan", 100)
-    			self.__devices.append(device)
-    		elif deviceType == "lock":
-    			device = Lock(self.__name + " lock", 5)
-    			self.__devices.append(device)
-    		elif deviceType == "security camera":
-    			device = SecurityCamera(self.__name + " security camera", 60)
-    			self.__devices.append(device)
-    		else:
-    			print("Invalid device type")
+            if deviceType == "light":
+                device = Lightbulb(self.__name + " light", 60)
+                self.__devices.append(device)
+            elif deviceType == "speaker":
+                device = Speaker(self.__name + " speaker", 30)
+                self.__devices.append(device)
+            elif deviceType == "thermostat":
+                device = Thermostat(self.__name + " thermostat", 10)
+                self.__devices.append(device)
+            elif deviceType == "plug":
+                device = Plug(self.__name + " plug", 120)
+                self.__devices.append(device)
+            elif deviceType == "fan":
+                device = Fan(self.__name + " fan", 100)
+                self.__devices.append(device)
+            elif deviceType == "lock":
+                device = Lock(self.__name + " lock", 5)
+                self.__devices.append(device)
+            elif deviceType == "security camera":
+                device = SecurityCamera(self.__name + " security camera", 60)
+                self.__devices.append(device)
+            else:
+                print("Invalid device type")
+                return False
+            return True
      	
     def get_power_usage(self):
         return sum(dev.wattage for dev in self.__devices)
@@ -85,3 +88,20 @@ class Room:
         else:
             for device in self.devices:
                 print("\t" + str(device))
+
+    def get_device(self, name=None):
+	    if name is not None:
+		    for device in self.__devices:
+			    if device.name == name:
+				    return device
+	    else:
+		    while (True):
+			    print("Enter name of device:")
+			    deviceName = input("> ")
+
+			    for d in self.__devices:
+				    n = d.name
+				    if deviceName == n or n == self.__name + " " + deviceName:
+					    return d
+				
+			    print("Device not found \n")

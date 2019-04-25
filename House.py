@@ -45,10 +45,19 @@ class House:
 	
 	def get_rooms(self):
 		return self.__rooms
-    
+   
 	def get_overall_power_usage(self):
 		return sum(room.get_power_usage() for room in self.__rooms)
 	
 	def print_house_info(self):
 		for room in self.rooms:
 			room.print_room_info()
+
+	def sleep(self):
+		for room in self.rooms:
+			room.lights_off()
+			room.stop_music()
+			room.set_temperature(68)
+
+	def wake(self):
+		self.get_room("Entry").lights_on()

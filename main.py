@@ -29,10 +29,11 @@ def getInput(validCommands):
 
 
 def updateDeviceStates():
-	#this is where we can handle the automation
-	# print("doing automation.....")
 	# Tasks will print if they were performed or not now
 	TaskRunner.get_task_runner().run_tasks()
+
+def addTask():
+	print("\nAdding a new task\n")
 
 def main():
 	clear()
@@ -73,41 +74,141 @@ def main():
 		bathroom.add_device("lock")
 		bathroom.add_device("plug")
 
-		user = RealUser("Bob", house)
+		entry.add_device("light")
+
+		print("Would you like to control the home or run a simulation?")
+		print("c: control")
+		print("s: simulate")
+		validIn = ["s", "c"]
+		inp = getInput(validIn)
+		if inp == "c":
+			user = RealUser("Bob", house)
+		else:
+			user = InfrequentUser("Bob", house)
 
 	#Start up one UI if we are a real user, or another if we are simulating
 	if type(user) != RealUser:
-
-		print("simulating")
-
-		#This needs to be more of an app-like menu
-
-		#Display current state of all devices, and if there on a routine
+		#This is more of an app-like menu
+		print("Simulating")
 
 		#Display all registered Users
 
-		#The user will then have the options: 
-
-		# 1: Add device
-
-
-		# 2: Add User
-
-
-		# 3: Edit device settings
-		#This is where a user can create automated routines for devices
-
+		print("Welcome to smart home! \n")
 		
-		# 4: View Energy Report
+		interacting = True
+		while(interacting):
+			print("Options: ")
+			print("Device: Add a device")
+			print("User: Add a user")
+			print("Edit: Edit device settings")
+			print("Energy: View energy report")
+			print("Standby: View house state")
+			print("exit: Close the app")
 
-		
-		#4: Standby (Ability to "watch" the house)
-		#     Here devices will print when they are being turned on/off and various info
-		#    about their current state, the house will print out energy info and time
-		#    periodically. This is so a user could see what is happening in the house
-		#    and it will prove that our app is actually doing something.
+			validCommands = ["Device", "User", "Edit", "Energy", "Standby", "exit"]
+			cmd = getInput(validCommands)
 
-    #   Call on user.interacts() to alter some device in room user.getCurrentRoom()
+			if cmd == "Device":
+				# 1: Add device
+				print("\nFirst, pick the room the device is in")
+				room = house.get_room()
+				valid = False
+				while(not valid):
+					print("Now, Enter device type: (light, speaker, thermostat, plug, fan, lock, security camera)")
+					name = input("> ")
+					valid = room.add_device(name)
+					print("\n")
+
+				print("Success! \n")
+
+			elif cmd == "User":
+				print("\nFirst, specify the type of user: (infrequent, regular, automation, power)")
+				validTypes = ["infrequent", "regular", "automation", "power"]
+				inp = getInput(validTypes)
+				print("\nNow, enter a name: ")
+				name = input("> ")
+				if inp == "infrequent":
+					user = InfrequentUser(name, house)
+				elif inp == "regular":
+					user = RegularUser(name, house)
+				elif inp == "automation":
+					user = AutomationUser(name, house)
+				elif inp == "power":
+					user = PowerUser(name, house)
+
+				print("\nSuccess!\n")
+
+			elif cmd == "Edit":
+				# 3: Edit device settings, this is where a user can create automated routines for devices
+
+				#Show all devices
+				print()
+				house.print_house_info()
+				print()
+
+				#The user now needs to select one
+				room = house.get_room()
+				device = room.get_device()
+
+				print("\nSelected: " + device.name + str(device) + "\n\n")
+
+				print("Options: ")
+				print("State: Edit device state ")
+				print("Task: Edit device tasks")
+				print("Back: Go back to main menu\n")
+
+				validCommands = ["State", "Task", "Back"]
+				cmd = getInput(validCommands)
+
+				if cmd == "State":
+					print("\nState variables: ")
+					for t in device.allowed_states:
+						print("-" + t)
+					print("\n")
+					
+					valid = False
+					while (not valid):
+						print("Enter variable to change: ")
+						stateVar = input("> ")
+						if not device.is_allowable_state(stateVar):
+							print(stateVar, "is not allowed for", type(device))
+						else:
+							valType = device.getType(stateVar)
+							print("Enter new value: " + "Type: " + str(valType) + ")")
+							stateVal = input("> ")
+
+							valid = device.change_state(**{stateVar:stateVal})
+
+					print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
+
+
+				elif cmd == "Task":
+					addTask()
+			
+			elif cmd == "Energy":
+				# 4: View Energy Report
+				print("House is currently using %d watts" % house.get_overall_power_usage())
+
+			elif cmd == "Standby":
+				#    4: Standby (Ability to "watch" the house)
+				#    Here devices will print when they are being turned on/off and various info
+				#    about their current state, the house will print out energy info and time
+				#    periodically. This is so a user could see what is happening in the house
+				#    and it will prove that our app is actually doing something.
+
+				#Display current state of all devices, and if there on a routine
+				print()
+				house.print_house_info()
+				print()
+
+				for user in house.users:
+					user.interact()
+					user.automate()
+
+			elif cmd == "exit":
+				interacting = False
+			
+
 
 
 	else:
@@ -138,18 +239,21 @@ def main():
 					
 					interacting = True
 					while (interacting):
-
+						
 						print ("Commands:")
 						print ("r: go to a different room | l: leave the house | e: enter the house")
 						print ("settings: edit device settings \n")
 						print ("lights on/off: Turn on or off the lights")
 						print ("play/pause: Play or pause music | set temp: Set room temperature\n")
 						print ("wh: wait an hour | wt: wait until tommorrow \n")
-						print ("devs: print all devices in the room and their states")
+						print ("rdevs: print all devices in the room and their states")
+						print ("hdevs: print all devices in the house and their states")
 						print ("exit: exit simulation")
+						
 
-						validCommands = ["r", "l", "e", "settings", "wh", "wt", "lights on", "lights off", "play", "pause", "set temp", "devs", "exit"]
+						validCommands = ["r", "l", "e", "settings", "wh", "wt", "lights on", "lights off", "play", "pause", "set temp", "rdevs", "hdevs", "exit"]
 						cmd = getInput(validCommands)
+						clear()
 
 						if cmd == "s":
 							continue
@@ -182,16 +286,52 @@ def main():
 									print("Enter an integer\n")	
 
 						elif cmd == "l":
-							print ("left")
-							#We could have the house do something when the user leaves
+							print ("You've left the house, entering sleep mode")
+							house.sleep()
 
 						elif cmd == "e":
-							print ("entered")
-							#We could hae the house do something when the user returns
+							print ("You've entered the house, welcome back")
+							house.wake()
 
 						elif cmd == "settings":
-							#This is where user could create automated tasks for a device in their room
-							print("Setting things...")
+							print()
+							currentRoom.print_room_info()
+							print()
+							device = currentRoom.get_device()
+
+							print("\nSelected: " + device.name + str(device) + "\n\n")
+
+							print("Options: ")
+							print("State: Edit device state ")
+							print("Task: Edit device tasks")
+							print("Back: Go back to main menu\n")
+
+							validCommands = ["State", "Task", "Back"]
+							cmd = getInput(validCommands)
+
+							if cmd == "State":
+								print("\nState variables: ")
+								for t in device.allowed_states:
+									print("-" + t)
+								print("\n")
+								
+								valid = False
+								while (not valid):
+									print("Enter variable to change: ")
+									stateVar = input("> ")
+									if not device.is_allowable_state(stateVar):
+										print(stateVar, "is not allowed for", type(device))
+									else:
+										valType = device.getType(stateVar)
+										print("Enter new value: " + "Type: " + str(valType) + ")")
+										stateVal = input("> ")
+
+										valid = device.change_state(**{stateVar:stateVal})
+
+								print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
+								
+							elif cmd == "Task":
+								addTask()
 
 						elif cmd == "wh":
 							print ("\n Waiting one hour... \n")
@@ -202,9 +342,14 @@ def main():
 							currentTime.next_day()
 							interacting = False
 
-						elif cmd == "devs":
+						elif cmd == "rdevs":
 							print()
 							currentRoom.print_room_info()
+							print()
+
+						elif cmd == "hdevs":
+							print()
+							house.print_house_info()
 							print()
 						
 						elif cmd == "exit":

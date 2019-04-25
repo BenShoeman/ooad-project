@@ -20,6 +20,11 @@ class Device:
     def allowed_states(self):
         return tuple(x for x,_ in self._allowed_states)
     
+    def getType(self, state):
+        for s, val in self._allowed_states:
+            if s == state:
+                return type(val)
+
     @property
     def name(self):
         return self.__name
@@ -36,8 +41,10 @@ class Device:
         for key in kwargs:
             if self.is_allowable_state(key):
                 self.__state[key] = kwargs[key]
+                return True
             else:
                 print(key, "is not allowed for", type(self))
+                return False
     
     def is_allowable_state(self, state):
         return state in (x for x,_ in self._allowed_states)
