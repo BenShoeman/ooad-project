@@ -80,5 +80,8 @@ class Room:
     
     def print_room_info(self):
         print(self.name)
-        for device in self.devices:
-            print("\t" + str(device))
+        if len(self.devices) == 0:
+            print("\tNo devices in " + self.name)
+        else:
+            for device in self.devices:
+                print("\t" + str(device))

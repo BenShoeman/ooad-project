@@ -3,12 +3,19 @@ from House import *
 from Room import *
 from Task import *
 from TaskRunner import *
+from Time import *
 from User import *
 import os
+import pickle
+import sys
 
 # Command to clear terminal
 def clear():
     os.system('cls' if os.name=='nt' else 'clear')
+
+def exit_cleanup(house):
+	# Save the house state for next simulation
+	pickle.dump(house, open("data/house.p", "wb"))
 
 def getInput(validCommands):
 	valid = False
@@ -21,44 +28,52 @@ def getInput(validCommands):
 			print("Please enter a valid command\n")
 
 
-def updateDeviceStates(hour):
+def updateDeviceStates():
 	#this is where we can handle the automation
-	print("doing automation.....")
-
+	# print("doing automation.....")
+	# Tasks will print if they were performed or not now
+	TaskRunner.get_task_runner().run_tasks()
 
 def main():
+	clear()
 
-	house = House()
+	if os.path.isfile("data/house.p"):
+		house = pickle.load(open("data/house.p", "rb"))
+		print("Users: {}".format(house.users))
+		username = input("Choose a user: ")
+		user = house.get_user(username)
+	else:
+		house = House()
 
-	livingRoom = house.add_room("Living Room")
-	kitchen = house.add_room("Kitchen")
-	bedroom = house.add_room("Bedroom")
-	bathroom = house.add_room("Bathroom")
-	entry = house.add_room("Entry")
+		livingRoom = house.add_room("Living Room")
+		kitchen = house.add_room("Kitchen")
+		bedroom = house.add_room("Bedroom")
+		bathroom = house.add_room("Bathroom")
+		entry = house.add_room("Entry")
 
-	livingRoom.add_device("light")
-	livingRoom.add_device("light")
-	livingRoom.add_device("speaker")
-	livingRoom.add_device("fan")
-	livingRoom.add_device("thermostat")
-	livingRoom.add_device("plug")
-	livingRoom.add_device("plug")
+		livingRoom.add_device("light")
+		livingRoom.add_device("light")
+		livingRoom.add_device("speaker")
+		livingRoom.add_device("fan")
+		livingRoom.add_device("thermostat")
+		livingRoom.add_device("plug")
+		livingRoom.add_device("plug")
 
-	kitchen.add_device("light")
-	kitchen.add_device("fan")
-	kitchen.add_device("plug")
+		kitchen.add_device("light")
+		kitchen.add_device("fan")
+		kitchen.add_device("plug")
 
-	bedroom.add_device("light")
-	bedroom.add_device("speaker")
-	bedroom.add_device("lock")
-	bedroom.add_device("plug")
+		bedroom.add_device("light")
+		bedroom.add_device("speaker")
+		bedroom.add_device("lock")
+		bedroom.add_device("plug")
 
-	bathroom.add_device("light")
-	bathroom.add_device("fan")
-	bathroom.add_device("lock")
-	bathroom.add_device("plug")
+		bathroom.add_device("light")
+		bathroom.add_device("fan")
+		bathroom.add_device("lock")
+		bathroom.add_device("plug")
 
-	user = RealUser("Bob", house)
+		user = RealUser("Bob", house)
 
 	#Start up one UI if we are a real user, or another if we are simulating
 	if type(user) != RealUser:
@@ -98,40 +113,42 @@ def main():
 	else:
 		print("controlling")
 
-		currentRoom = entry
+		currentRoom = house.get_room("Entry")
+		currentTime = Time.get_time()
 
 		for Day in range (1,31):
-			print ("\nCurrent Day: %d" % Day)
+			clear()
+			updateDeviceStates()
+
+			print ("Current Day: %d" % currentTime.day)
 			print ("Current Room: %s \n" % currentRoom.name)
-			print ("Commands: \n s: skip to next day \n enter: continue with today \n")
+			print ("Commands:")
+			print ("s: skip to next day | enter: continue with today")
+			print ("exit: exit simulation\n")
 			
-			validCommands = ["s", ""]
+			validCommands = ["s", "", "exit"]
 			cmd = getInput(validCommands)
 
-			if cmd != "s":
+			if cmd == "":
 				for hour in range(1,25):
+					clear()
+					updateDeviceStates()
 
-					updateDeviceStates(hour)
-
-					print("\nIt is currently %d:00 hours \n " % hour)
+					print("\nIt is currently %02d:00 hours" % currentTime.hour + " on day %d\n" % currentTime.day)
 					
 					interacting = True
 					while (interacting):
 
 						print ("Commands:")
-						print ("r: go to a different room")
-						print ("l: leave the house")
-						print ("e: enter the house")
+						print ("r: go to a different room | l: leave the house | e: enter the house")
 						print ("settings: edit device settings \n")
-						print ("lights on: Turn on the lights")
-						print ("lights off: Turn off the lights")
-						print ("play: Play music")
-						print ("pause: Pause music")
-						print ("set temp: Set room temperature\n")
-						print ("wait1: wait an hour")
-						print ("wait2: wait until tommorrow \n")
+						print ("lights on/off: Turn on or off the lights")
+						print ("play/pause: Play or pause music | set temp: Set room temperature\n")
+						print ("wh: wait an hour | wt: wait until tommorrow \n")
+						print ("devs: print all devices in the room and their states")
+						print ("exit: exit simulation")
 
-						validCommands = ["r", "l", "e", "settings", "wait1", "wait2", "lights on", "lights off", "play", "pause", "set temp"]
+						validCommands = ["r", "l", "e", "settings", "wh", "wt", "lights on", "lights off", "play", "pause", "set temp", "devs", "exit"]
 						cmd = getInput(validCommands)
 
 						if cmd == "s":
@@ -144,7 +161,10 @@ def main():
 						elif cmd == "lights off":
 							currentRoom.lights_off()
 						elif cmd == "play":
-							currentRoom.play_music()
+							song = input("What song? ")
+							currentRoom.play_music(song)
+						elif cmd == "pause":
+							currentRoom.stop_music(song)
 						elif cmd == "set temp":
 							valid = False
 							while (not valid):
@@ -173,18 +193,34 @@ def main():
 							#This is where user could create automated tasks for a device in their room
 							print("Setting things...")
 
-						elif cmd == "wait1":
+						elif cmd == "wh":
 							print ("\n Waiting one hour... \n")
 							interacting = False
 
-						elif cmd == "wait2":
+						elif cmd == "wt":
 							print ("\nWaiting until tommorrow... \n")
+							currentTime.next_day()
 							interacting = False
-							break
+
+						elif cmd == "devs":
+							print()
+							currentRoom.print_room_info()
+							print()
+						
+						elif cmd == "exit":
+							exit_cleanup(house)
+							sys.exit(0)
 					
-
-				
-
+					if cmd == "wt":
+						break
+					currentTime.add_hour()
+			
+			elif cmd == "s":
+				currentTime.next_day()
+			else:
+				break
+	
+	exit_cleanup(house)
 
 if __name__ == "__main__":
     main()

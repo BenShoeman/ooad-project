@@ -35,5 +35,5 @@ class TaskRunner:
 
     def get_task_runner():
         if TaskRunner.__instance is None:
-            TaskRunner.__instance = __TaskRunner()
+            TaskRunner.__instance = TaskRunner.__TaskRunner()
         return TaskRunner.__instance

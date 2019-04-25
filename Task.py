@@ -41,6 +41,7 @@ class Task:
         if Time.get_time().has_time_passed(self.__last_day_run, self.time):
             self.__device.change_state(**self.__actions)
             self.__last_day_run = Time.get_time().day
+            print("Performed " + str(self))
     
     def __str__(self):
         return "Task \"{}\" for {} at {}: {}".format(self.name, self.__device.name, self.time, self.__actions)

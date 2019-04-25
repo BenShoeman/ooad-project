@@ -9,6 +9,11 @@ class Time:
         def add_day(self):
             self.day += 1
         
+        def next_day(self):
+            self.add_day()
+            self.hour = 0
+            self.minute = 0
+        
         def add_hour(self):
             self.hour = (self.hour + 1) % 24
             if self.hour == 0:
@@ -51,7 +56,7 @@ class Time:
 
     def get_time():
         if Time.__instance is None:
-            Time.__instance = __Time()
+            Time.__instance = Time.__Time()
         return Time.__instance
     
     def set_and_get_time(day=None, time=None): # Day is int, Time is time string of format HH:MM
