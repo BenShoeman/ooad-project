@@ -14,7 +14,7 @@ class House:
 		self.__rooms.append(room)
 		return room
 
-	def get_room(self):
+  def get_room(self):
 		while (True):
 			print("Enter name of room:")
 			roomName = input("> ")
@@ -25,6 +25,9 @@ class House:
 					return r
 			
 			print("Room not found \n")
+  
+  def get_rooms(self):
+    return self.__rooms
     
 	def get_overall_power_usage(self):
 		return sum(room.get_power_usage() for room in self.__rooms)

@@ -58,7 +58,7 @@ def main():
 	bathroom.add_device("lock")
 	bathroom.add_device("plug")
 
-	user = RealUser("Bob")
+	user = RealUser("Bob", house)
 
 	#Start up one UI if we are a real user, or another if we are simulating
 	if type(user) != RealUser:
@@ -87,10 +87,12 @@ def main():
 
 		
 		#4: Standby (Ability to "watch" the house)
-		#Here devices will print when they are being turned on/off and various info
+		#     Here devices will print when they are being turned on/off and various info
 		#    about their current state, the house will print out energy info and time
 		#    periodically. This is so a user could see what is happening in the house
 		#    and it will prove that our app is actually doing something.
+
+    #   Call on user.interacts() to alter some device in room user.getCurrentRoom()
 
 
 	else:
