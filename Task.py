@@ -49,7 +49,7 @@ class Task:
         # Make sure it's the right time to do the actions
         if Time.get_time().has_time_passed(self.__last_day_run, self.time):
             self.__device.change_state(**self.__actions)
-            self.__last_day_run = Time.get_time().day
+            self.__last_day_run = Time.get_time().day + 1
             print("Performed " + str(self))
     
     # Defines str(task), which is used for the TaskRunner when printing its Tasks.

@@ -22,6 +22,8 @@ def clear():
 
 # Saves the house state for next simulation.
 def exit_cleanup(house):
+	for user in house.users:
+		user.reset_counts()
 	pickle.dump(house, open("data/house.p", "wb"))
 
 # Gets user input and only accepts valid commands.
@@ -88,7 +90,7 @@ def addTask(room):
 		print("Set all thermostats in {} to what tmperature?".format(room.name))
 		temp = getNumber()
 		room.set_thermostat_schedule(temp, time)
-	print("Task successsfully added.")
+	print("Task successfully added.")
 
 def main():
 	clear()
@@ -96,7 +98,7 @@ def main():
 	if os.path.isfile("data/house.p"):
 		house = pickle.load(open("data/house.p", "rb"))
 		print("Users: {}".format(house.users))
-		username = input("Choose a user: ")
+		username = input("Choose a primary user: ")
 		user = house.get_user(username)
 	else:
 		house = House()
@@ -150,18 +152,22 @@ def main():
 
 		print("Welcome to smart home! \n")
 		
+		currentTime = Time.get_time()
 		interacting = True
 		while(interacting):
-			print("Options: ")
-			print("Device: Add a device")
-			print("User: Add a user")
-			print("Edit: Edit device settings")
-			print("Energy: View energy report")
-			print("Standby: View house state")
+			print("It is currently %02d:00 hours" % currentTime.hour + " on day %d\n" % currentTime.day)
+
+			print("Select a command: ")
+			print("Device: Add a device | User: Add a user")
+			print("Edit: Edit device settings | Task: Add an automated task")
+			print("Energy: View energy report | Standby: View house state")
+			print("hdevs: Print all devices in the house and their states")
 			print("exit: Close the app")
 
-			validCommands = ["Device", "User", "Edit", "Energy", "Standby", "exit"]
+			validCommands = ["Device", "User", "Edit", "Task", "Energy", "Standby", "hdevs", "exit"]
 			cmd = getInput(validCommands)
+
+			clear()
 
 			if cmd == "Device":
 				# 1: Add device
@@ -205,40 +211,36 @@ def main():
 				room = house.get_room()
 				device = room.get_device()
 
-				print("\nSelected: " + str(device) + "\n\n")
+				print("\nChanging state of: " + str(device) + "\n\n")
 
-				print("Options: ")
-				print("State: Edit device state ")
-				print("Task: Edit device tasks")
-				print("Back: Go back to main menu\n")
+				print("\nState variables: ")
+				for t in device.allowed_states:
+					print("-" + t)
+				print("\n")
+				
+				valid = False
+				while (not valid):
+					print("Enter variable to change: ")
+					stateVar = input("> ")
+					if not device.is_allowable_state(stateVar):
+						print(stateVar, "is not allowed for", type(device))
+					else:
+						valType = device.getType(stateVar)
+						print("Enter new value: " + "Type: " + str(valType) + ")")
+						stateVal = input("> ")
 
-				validCommands = ["State", "Task", "Back"]
-				cmd = getInput(validCommands)
+						valid = device.change_state(**{stateVar:valType(stateVal)})
 
-				if cmd == "State":
-					print("\nState variables: ")
-					for t in device.allowed_states:
-						print("-" + t)
-					print("\n")
-					
-					valid = False
-					while (not valid):
-						print("Enter variable to change: ")
-						stateVar = input("> ")
-						if not device.is_allowable_state(stateVar):
-							print(stateVar, "is not allowed for", type(device))
-						else:
-							valType = device.getType(stateVar)
-							print("Enter new value: " + "Type: " + str(valType) + ")")
-							stateVal = input("> ")
-
-							valid = device.change_state(**{stateVar:stateVal})
-
-					print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
+				print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
 
 
-				elif cmd == "Task":
-					addTask(room)
+			elif cmd == "Task":
+				#Show all devices
+				print()
+				house.print_house_info()
+				print()
+				room = house.get_room()
+				addTask(room)
 			
 			elif cmd == "Energy":
 				# 4: View Energy Report
@@ -252,13 +254,30 @@ def main():
 				#    and it will prove that our app is actually doing something.
 
 				#Display current state of all devices, and if there on a routine
-				print()
-				house.print_house_info()
-				print()
+				print("Note: Press Control-C to stop standby mode.")
+				print("Advance by hour or by day? hour/day")
+				choice = getInput(["hour","day"])
+				time_advance = currentTime.next_day if choice == "day" else currentTime.add_hour
+				try:
+					while True:
+						clear()
+						for user in house.users:
+							user.interact()
+							user.automate()
+						updateDeviceStates()
+						print("\nIt is currently %02d:00 hours" % currentTime.hour + " on day %d\n" % currentTime.day)
+						house.print_house_info()
+						print()
+						TaskRunner.get_task_runner().print_tasks()
+						
+						time_advance()
+						input()
+				except KeyboardInterrupt:
+					print("Standby mode stopped.")
+					pass
 
-				for user in house.users:
-					user.interact()
-					user.automate()
+			elif cmd == "hdevs":
+				house.print_house_info()
 
 			elif cmd == "exit":
 				interacting = False
@@ -297,7 +316,7 @@ def main():
 						
 						print ("Commands:")
 						print ("r: go to a different room | l: leave the house | e: enter the house")
-						print ("settings: edit device settings \n")
+						print ("settings: edit device settings | task: add an automated task\n")
 						print ("lights on/off: Turn on or off the lights")
 						print ("play/pause: Play or pause music | set temp: Set room temperature\n")
 						print ("wh: wait an hour | wt: wait until tommorrow \n")
@@ -306,7 +325,7 @@ def main():
 						print ("exit: exit simulation")
 						
 
-						validCommands = ["r", "l", "e", "settings", "wh", "wt", "lights on", "lights off", "play", "pause", "set temp", "rdevs", "hdevs", "exit"]
+						validCommands = ["r", "l", "e", "settings", "task", "wh", "wt", "lights on", "lights off", "play", "pause", "set temp", "rdevs", "hdevs", "exit"]
 						cmd = getInput(validCommands)
 						clear()
 
@@ -354,39 +373,30 @@ def main():
 							print()
 							device = currentRoom.get_device()
 
-							print("\nSelected: " + str(device) + "\n\n")
+							print("\nChanging state of: " + str(device) + "\n\n")
 
-							print("Options: ")
-							print("State: Edit device state ")
-							print("Task: Edit device tasks")
-							print("Back: Go back to main menu\n")
+							print("\nState variables: ")
+							for t in device.allowed_states:
+								print("-" + t)
+							print("\n")
+							
+							valid = False
+							while (not valid):
+								print("Enter variable to change: ")
+								stateVar = input("> ")
+								if not device.is_allowable_state(stateVar):
+									print(stateVar, "is not allowed for", type(device))
+								else:
+									valType = device.getType(stateVar)
+									print("Enter new value: " + "Type: " + str(valType) + ")")
+									stateVal = input("> ")
 
-							validCommands = ["State", "Task", "Back"]
-							cmd = getInput(validCommands)
+									valid = device.change_state(**{stateVar:valType(stateVal)})
 
-							if cmd == "State":
-								print("\nState variables: ")
-								for t in device.allowed_states:
-									print("-" + t)
-								print("\n")
+							print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
 								
-								valid = False
-								while (not valid):
-									print("Enter variable to change: ")
-									stateVar = input("> ")
-									if not device.is_allowable_state(stateVar):
-										print(stateVar, "is not allowed for", type(device))
-									else:
-										valType = device.getType(stateVar)
-										print("Enter new value: " + "Type: " + str(valType) + ")")
-										stateVal = input("> ")
-
-										valid = device.change_state(**{stateVar:stateVal})
-
-								print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
-								
-							elif cmd == "Task":
-								addTask(currentRoom)
+						elif cmd == "task":
+							addTask(currentRoom)
 
 						elif cmd == "wh":
 							print ("\n Waiting one hour... \n")
