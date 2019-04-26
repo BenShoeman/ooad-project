@@ -5,18 +5,23 @@ from Task import *
 from TaskRunner import *
 from Time import *
 from User import *
+
+# THIRD PARTY LIBs USED IN THIS FILE.
+# os and sys are used to utilize system functions like clearing the terminal and
+# exiting cleanly, and pickle is used to save the state of the House.
 import os
 import pickle
 import sys
 
-# Command to clear terminal
+# Clears the terminal.
 def clear():
     os.system('cls' if os.name=='nt' else 'clear')
 
+# Saves the house state for next simulation.
 def exit_cleanup(house):
-	# Save the house state for next simulation
 	pickle.dump(house, open("data/house.p", "wb"))
 
+# Gets user input and only accepts valid commands.
 def getInput(validCommands):
 	valid = False
 	while (not valid):
@@ -27,11 +32,12 @@ def getInput(validCommands):
 		else:
 			print("Please enter a valid command\n")
 
-
+# Tells the TaskRunner to run its tasks.
 def updateDeviceStates():
 	# Tasks will print if they were performed or not now
 	TaskRunner.get_task_runner().run_tasks()
 
+# Lets the real user add a task.
 def addTask():
 	print("\nAdding a new task\n")
 

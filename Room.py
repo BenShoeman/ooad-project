@@ -10,6 +10,7 @@ from TaskRunner import *
 # details. A Room contains several Devices and keeps track of/changes their
 # states, and it also creates Tasks that the TaskRunner can run on those Devices.
 class Room:
+    # Constructor, creates an empty Room with a name and no Devices
     def __init__(self, name):
         self.__name = name  # This attribute is used to identify the Room
         self.__devices = [] # This attribute contains all Devices in the Room

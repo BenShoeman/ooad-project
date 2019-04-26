@@ -6,6 +6,7 @@
 # playing, etc. based on what kind of device it is (the kind being determined by
 # subclassing).
 class Device:
+    # Constructor, creates a Device with a name, wattage, and sets the state to the default state
     def __init__(self, name, wattage):
         self.__state = {}        # This attribute is used to represent the state of the device (on/off status, song playing, etc.)
         self.__name = name       # This attribute is used to identify the Device
