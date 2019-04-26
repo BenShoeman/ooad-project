@@ -11,7 +11,7 @@ This is a simulated smarthome that contains the major functions of modern smarth
 
 ## Files
 
-- `Device.py`: contains implementation of Device class
+- `Device.py`: contains implementation of Device class as well as its subclasses
 - `House.py`: contains implementation of House class
 - `main.py`: the main script that runs the simulation
 - `README.md`: the file you're reading!
@@ -19,7 +19,7 @@ This is a simulated smarthome that contains the major functions of modern smarth
 - `Task.py`: contains implementation of Task class
 - `TaskRunner.py`: contains implementation of TaskRunner class
 - `Time.py`: contains implementation of Time class
-- `User.py`: contains implementation of User class
+- `User.py`: contains implementation of User class as well as its subclasses
 
 ## How to Execute
 
