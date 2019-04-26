@@ -64,6 +64,24 @@ class Room:
         task = Task(device.name + " task", time, device, state)
         TaskRunner.get_task_runner().add_task(task)
     
+    # Sets a schedule for all lights in Room to turn on/off at a given time.
+    def set_light_schedule(self, on_state, time):
+        lights = self.get_devices_of_type(Lightbulb)
+        for light in lights:
+            self.set_schedule(light, {"on": on_state}, time)
+    
+    # Sets a schedule for all speakers in Room to play/pause at a given time.
+    def set_speaker_schedule(self, on_state, time, song=None):
+        speakers = self.get_devices_of_type(Speaker)
+        for speaker in speakers:
+            self.set_schedule(speaker, {"on": on_state, "song": "" if song is None else song}, time)
+    
+    # Sets a schedule for all thermostats in Room to change temperature at a given time.
+    def set_thermostat_schedule(self, temperature, time):
+        thermostats = self.get_devices_of_type(Thermostat)
+        for thermostat in thermostats:
+            self.set_schedule(thermostat, {"temperature": temperature}, time)
+    
     # Notifies the TaskRunner to remove all scheduled Tasks for a Device.
     def remove_schedule(self, device):
         TaskRunner.get_task_runner().remove_tasks_for_device(device)

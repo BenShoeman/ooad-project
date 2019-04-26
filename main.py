@@ -13,6 +13,9 @@ import os
 import pickle
 import sys
 
+# main.py: the main script that runs the simulation
+# Authors: Mike Hering, Ben Shoeman
+
 # Clears the terminal.
 def clear():
     os.system('cls' if os.name=='nt' else 'clear')
@@ -32,14 +35,60 @@ def getInput(validCommands):
 		else:
 			print("Please enter a valid command\n")
 
+# Gets a valid time string from user input.
+def getTime():
+    valid = False
+    while (not valid):
+        time = input("> ")
+        time_vals = time.split(':')
+        if len(time_vals[0]) == 2 and len(time_vals[0]) == len(time_vals[1]) and time_vals[0].isnumeric() and time_vals[1].isnumeric():
+            valid = True
+            return time
+        else:
+            print("Please enter a valid time in HH:MM format\n")
+
+# Gets a valid number from user input.
+def getNumber():
+    valid = False
+    while (not valid):
+        num = input("> ")
+        if num.isnumeric():
+            valid = True
+            return int(num)
+        else:
+            print("Please enter a valid number\n")
+
 # Tells the TaskRunner to run its tasks.
 def updateDeviceStates():
 	# Tasks will print if they were performed or not now
 	TaskRunner.get_task_runner().run_tasks()
 
 # Lets the real user add a task.
-def addTask():
-	print("\nAdding a new task\n")
+def addTask(room):
+	print("\nWhat would you like to automate for {}?\n".format(room.name))
+	print("l: Lights | s: Speakers | t: Thermostat")
+	validcmds = ['l', 's', 't']
+	cmd = getInput(validcmds)
+	print("Set a time for the automated task.")
+	time = getTime()
+	if cmd == 'l':
+		print("Turn all lights in {} on or off? on/off".format(room.name))
+		on_state = True if getInput(["on","off"]) == "on" else False
+		room.set_light_schedule(on_state, time)
+	elif cmd == 's':
+		print("Turn all speakers in {} on or off? on/off".format(room.name))
+		on_state = True if getInput(["on","off"]) == "on" else False
+		if on_state:
+			print("What song should the speakers play?")
+			song = input("> ")
+		else:
+			song = None
+		room.set_speaker_schedule(on_state, time, song=song)
+	elif cmd == 't':
+		print("Set all thermostats in {} to what tmperature?".format(room.name))
+		temp = getNumber()
+		room.set_thermostat_schedule(temp, time)
+	print("Task successsfully added.")
 
 def main():
 	clear()
@@ -156,7 +205,7 @@ def main():
 				room = house.get_room()
 				device = room.get_device()
 
-				print("\nSelected: " + device.name + str(device) + "\n\n")
+				print("\nSelected: " + str(device) + "\n\n")
 
 				print("Options: ")
 				print("State: Edit device state ")
@@ -189,7 +238,7 @@ def main():
 
 
 				elif cmd == "Task":
-					addTask()
+					addTask(room)
 			
 			elif cmd == "Energy":
 				# 4: View Energy Report
@@ -305,7 +354,7 @@ def main():
 							print()
 							device = currentRoom.get_device()
 
-							print("\nSelected: " + device.name + str(device) + "\n\n")
+							print("\nSelected: " + str(device) + "\n\n")
 
 							print("Options: ")
 							print("State: Edit device state ")
@@ -337,7 +386,7 @@ def main():
 								print("\nSuccess, " + device.name + " state changed. State: " + str(device) + "\n")
 								
 							elif cmd == "Task":
-								addTask()
+								addTask(currentRoom)
 
 						elif cmd == "wh":
 							print ("\n Waiting one hour... \n")

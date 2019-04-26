@@ -47,7 +47,7 @@ class Time:
             else:
                 if ':' in time and len(time) == 5:
                     time_vals = time.split(':')
-                    if len(time_vals[0]) == len(time_vals[1]) and time_vals[0].isnumeric() and time_vals[1].isnumeric():
+                    if len(time_vals[0]) == 2 and len(time_vals[0]) == len(time_vals[1]) and time_vals[0].isnumeric() and time_vals[1].isnumeric():
                         hour = int(time_vals[0])
                         minute = int(time_vals[1])
                     else:

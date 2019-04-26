@@ -1,4 +1,4 @@
-import Time
+from Time import *
 
 # Task.py: contains implementation of the Task class
 # Authors: Mike Hering, Ben Shoeman
@@ -20,7 +20,7 @@ class Task:
                 if self.__device.is_allowable_state(key):
                     self.__actions[key] = actions[key]
 
-        self.__last_day_run = 0 # This attribute is for comparing the Tasks to the Time object
+        self.__last_day_run = Time.get_time().day # This attribute is for comparing the Tasks to the Time object
     
     @property
     def name(self):
